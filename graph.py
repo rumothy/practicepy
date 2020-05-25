@@ -2,11 +2,12 @@ import fileinput
 from more_itertools import take, map_except
 
 class Graph:
+    __numVertices = 0
+    __numEdges = 0
+    __adjacencyLists = []
+
     def __init__(self, numVertices):
-        self.__numVertices = numVertices;
-        self.__numEdges = 0;
-        self.__adjacencyLists = [];
-        
+        self.__numVertices = numVertices
         for _ in range(numVertices):
             self.__adjacencyLists.append([])
 
@@ -17,7 +18,10 @@ class Graph:
         numVertices = int(header[0])
         numEdges = int(header[1])
         graph = Graph(numVertices)
-        for line in take(numEdges, f):
+        lines = take(numEdges, f)
+        linesList = list(lines)
+        linesList.reverse()
+        for line in linesList:
             vw = map_except(int, line, ValueError, TypeError)
             vwList = list(vw)
             v = vwList[0]
@@ -41,5 +45,36 @@ class Graph:
         self.__adjacencyLists[w].append(v)
         self.__numEdges = self.__numEdges + 1
 
-    def adjacencyList(v):
-        self.__adjacencyLists[v]
+    def adjacencyList(self, v):
+        return self.__adjacencyLists[v]
+
+
+class DepthFirstSearch:
+    __count = 0
+    __marked = []
+
+    def __init__(self, graph, s):
+        for _ in range(graph.numVertices):
+            self.__marked.append(False)
+        self.__dfs(graph, s)
+    
+    def __dfs(self, graph, v):
+        self.__marked[v] = True;
+        self.__count = self.__count + 1
+        for w in graph.adjacencyList(v):
+            if (self.__marked[w] != True):
+                self.__dfs(graph, w)
+
+
+    def isMarked(self, w):
+        return self.__marked[w]
+
+    def get_count(self):
+        return self.__count
+
+    count = property(get_count)
+        
+
+
+
+        
